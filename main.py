@@ -10,6 +10,7 @@ import dimensions
 import dblp
 import google_scholar
 import semantic_scholar
+import microsoft_academic
 
 
 def get_sparql_query_results(endpoint_url, query):
@@ -70,6 +71,7 @@ def get_titles(persons_dict):
         "ORCID": orcid_manual.paper_titles_for_id,
         "Google Scholar": google_scholar.paper_titles_for_id,
         "Semantic Scholar": semantic_scholar.paper_titles_for_id,
+        "Microsoft Academic": microsoft_academic.paper_titles_for_id,
         "Wikidata": wikidata_paper_titles_for_id,
     }
     titles = {}
@@ -101,7 +103,7 @@ if __name__ == '__main__':
         "DBLP": "wdt:P2456",
         "Dimensions": "wdt:P6178",
         "Github": "wdt:P2037",
-        "Microsoft Academic ": "wdt:P6366",
+        "Microsoft Academic": "wdt:P6366",
         "Semantic Scholar": "wdt:P4012",
         "DNB/GNB": "wdt:P227",
         "ACM Digital Library": "wdt:P864"
