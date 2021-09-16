@@ -2,6 +2,7 @@
 # https://rdflib.github.io/sparqlwrapper/
 
 import sys
+import re
 import orcid_manual
 from SPARQLWrapper import SPARQLWrapper, JSON
 import viaf
@@ -89,8 +90,32 @@ def get_titles(persons_dict):
     return titles
 
 
+def normalize_title(raw_title):
+    """ Makes title lowercase, then removes everything except
+        word characters (regex \w).
+    """
 
-  
+    return re.sub(r'\W', '', raw_title.lower())
+
+
+def disambiguate_titles(person_titles_dict):
+    merged_dict = dict()
+    for raw_title, ppr_dict in person_titles_dict.items():
+        norm_key = normalize_title(raw_title)
+        if norm_key not in merged_dict:
+            # take as is
+            merged_dict[norm_key] = ppr_dict
+        else:
+            # merge w/ existing
+            if merged_dict[norm_key] == dict:
+                for source, val in merged_dict[norm_key]:
+                    if source != 'title':
+                        merged_dict[norm_key][source] = (
+                            merged_dict[norm_key][source] or ppr_dict[source]
+                        )
+    return merged_dict
+
+
 platform_properties_dict = {
     "ORCID": "wdt:P496",
     "Google Scholar": "wdt:P1960",
@@ -103,7 +128,7 @@ platform_properties_dict = {
     "DNB/GNB": "wdt:P227",
     "ACM Digital Library": "wdt:P864"
 }
-app = Flask(__name__)   
+app = Flask(__name__)
 CORS(app)
 @app.route("/<wd_person_id>")
 def query(wd_person_id):
@@ -148,6 +173,9 @@ def query(wd_person_id):
         for paper in ret_json[person]:
             for platform_not_found in set.difference(set(platform_properties_dict.keys()), set(ret_json[person][paper].keys())):
                 ret_json[person][paper][platform_not_found] = 0
+    # disambiguate titles
+    for person in ret_json:
+        ret_json[person] = disambiguate_titles(ret_json[person])
     print("Returned JSON: ", ret_json)
     return ret_json
     """
