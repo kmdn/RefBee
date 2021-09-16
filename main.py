@@ -7,7 +7,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 
 # This is a sample Python script.
 
-def query_wikidata(person_id="Q57231890", platform_predicate="wdt:P496"):
+def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496"):
     endpoint_url = "https://query.wikidata.org/sparql"
 
     query = """SELECT DISTINCT ?o WHERE {
@@ -26,14 +26,38 @@ def query_wikidata(person_id="Q57231890", platform_predicate="wdt:P496"):
 
     results = get_results(endpoint_url, query)
 
+    orcid_ids_set = set()
     for result in results["results"]["bindings"]:
-        print(result['o']['value'])
-        print(result.keys())
-        print(type(result))
+        orcid_ids_set.add(result['o']['value'])
+        #print(result['o']['value'])
+        #print(result.keys())
+        #print(type(result))
+
+    return orcid_ids_set
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    query_wikidata()
+    platform_properties_dict = {
+                                "ORCID": "wdt:P496",
+                                "Google Scholar": "wdt:P1960",
+                                "VIAF": "wdt:P214",
+                                "DBLP": "wdt:P2456",
+                                "Dimensions": "wdt:P6178",
+                                "Github": "wdt:P2037",
+                                "Microsoft Academic ": "wdt:P6366",
+                                "Semantic Scholar": "wdt:P4012",
+                                "DNB/GNB": "wdt:P227",
+                                "ACM Digital Library": "wdt:P864"
+                                }
+
+    wd_person_id = "Q57231890"
+    persons_dict = {}
+    for platform in platform_properties_dict.keys():
+        platform_property = platform_properties_dict[platform]
+        print("ID (%s): %s" % (platform, platform_id))
+        platform_id = query_id_from_wikidata(person_id=wd_person_id, platform_predicate=platform_property)
+
+
