@@ -1,6 +1,7 @@
 import urllib.request
 import json
 
+
 def paper_titles_for_id(person_id):
 
     url = f'https://viaf.org/viaf/{person_id}/viaf.json'

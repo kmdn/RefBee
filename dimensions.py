@@ -1,6 +1,7 @@
 import urllib.request
 import json
 
+
 def paper_titles_for_id(person_id):
 
     url = f'https://app.dimensions.ai/discover/publication/results.json?and_facet_researcher=ur.{person_id}'
