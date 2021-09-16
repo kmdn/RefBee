@@ -7,6 +7,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 import viaf
 import acm
 import dimensions
+import dblp
 
 
 def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496"):
@@ -39,12 +40,17 @@ def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496")
 
 
 def query_orcid(orcid_id="0000-0001-5458-8645", institution_key="APP-ZON9G76T8090XGSI",
-                institution_secret="fe8d3704-73ce-4b77-a4fa-c45df8ce454c", sandbox="", authorization_code="PzS8tv",
-                redirect_uri="https://aifb.kit.edu"):
+                institution_secret="fe8d3704-73ce-4b77-a4fa-c45df8ce454c", sandbox=False, authorization_code="PzS8tv",
+                redirect_uri="https://aifb.kit.edu&code=PzS8tv"):
     # KN:
     # 0000-0002-4916-9443
     # code=PzS8tv
-    api = orcid.MemberAPI(institution_key, institution_secret, sandbox=True)
+    # curl -i -L -k -H 'Accept: application/json'
+    # --data 'client_id=APP-ZON9G76T8090XGSI
+    # client_secret=fe8d3704-73ce-4b77-a4fa-c45df8ce454c
+    # grant_type=authorization_code
+    # redirect_uri=https://aifb.kit.edu&code=PzS8tv' https://orcid.org/oauth/token
+    api = orcid.MemberAPI(institution_key, institution_secret, sandbox=False)
     token = api.get_token(user_id=institution_key, password=institution_secret, redirect_uri=redirect_uri)
     # get_token_from_authorization_code(authorization_code,
     #                                           redirect_uri)
@@ -62,6 +68,8 @@ def get_titles(persons_dict):
         "VIAF": viaf.paper_titles_for_id,
         "ACM Digital Library": acm.paper_titles_for_id,
         "Dimensions": dimensions.paper_titles_for_id,
+        "DBLP": dblp.paper_titles_for_id,
+
     }
     titles = {}
     for person in persons_dict.keys():
@@ -95,24 +103,21 @@ if __name__ == '__main__':
         "ACM Digital Library": "wdt:P864"
     }
 
-    populate_ids = False
-
-    if populate_ids:
-        wd_person_id = "Q57231890"
-        persons_dict = {}
-        for platform in platform_properties_dict.keys():
-            platform_property = platform_properties_dict[platform]
-            platform_id = query_id_from_wikidata(person_id=wd_person_id, platform_predicate=platform_property)
-            if len(platform_id) == 0:
-                continue
-            print("ID (%s): %s" % (platform, platform_id))
-            person_dict = persons_dict.get(wd_person_id, {})
-            # only relevant if it's defaulting to {}
-            persons_dict[wd_person_id] = person_dict
-            # add values for the specific platform
-            person_dict[platform] = platform_id
-        print(persons_dict)
+    wd_person_id = "Q57231890"
+    persons_dict = {}
+    for platform in platform_properties_dict.keys():
+        platform_property = platform_properties_dict[platform]
+        platform_id = query_id_from_wikidata(person_id=wd_person_id, platform_predicate=platform_property)
+        if len(platform_id) == 0:
+            continue
+        print("ID (%s): %s" % (platform, platform_id))
+        person_dict = persons_dict.get(wd_person_id, {})
+        # only relevant if it's defaulting to {}
+        persons_dict[wd_person_id] = person_dict
+        # add values for the specific platform
+        person_dict[platform] = platform_id
+    print(persons_dict)
     print(get_titles(persons_dict=persons_dict))
 
     # Now we've got our IDs - time to query the other endpoints
-    #query_orcid()
+    query_orcid()
