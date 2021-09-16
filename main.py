@@ -78,8 +78,11 @@ def get_titles(persons_dict):
                 continue
             titles_for_database = []
             for database_id in persons_dict[person][database]:
-                titles_for_database.append(fetching_functions[database](database_id))
-            titles[person][database] = titles_for_database
+                fetched_titles = fetching_functions[database](database_id)
+                if fetched_titles is None:
+                    continue
+                titles_for_database.extend(fetching_functions[database](database_id))
+            titles[person][database] = list(set(titles_for_database))
     return titles
 
 
