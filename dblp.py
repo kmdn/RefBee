@@ -1,28 +1,25 @@
 import urllib.request
-from rdflib import Graph
-from rdflib import Dataset
-from rdflib.namespace import RDF
+from xml.etree.ElementTree import ElementTree
+
+from lxml import etree
 import pprint
 
 
-def retrieve_titles(input_nt=""):
-    g = Graph()
-    g.parse(input_nt)
-    print("RDF File:", g)
-
-
-    print(len(g))
-    # prints: 2
-    for stmt in g:
-        print(stmt)
-    #for s, p, o, g in g.quads((None, None, None, None)):
-    #    print(s, p, o, g)
-    return None
+def retrieve_titles(input_xml=""):
+    root = etree.XML(input_xml.read())
+    #print(dir(root))
+    print(root.getchildren())
+    titles = set()
+    for element in root.iter():
+        if element.tag == "title":
+            titles.add(element.text)
+            #print("Element: %s %s " % (element.tag, element.text))
+    return list(titles)
 
 
 def paper_titles_for_id(person_id):
-    url = f'https://dblp.org/pid/{person_id}.nt'
-    titles = retrieve_titles(input_nt=urllib.request.urlopen(url))
-    print("DBLP: ", titles)
+    url = f'https://dblp.org/pid/{person_id}.xml'
+    print("URL:", url)
+    titles = retrieve_titles(input_xml=urllib.request.urlopen(url))
     return titles
 
