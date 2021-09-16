@@ -10,6 +10,15 @@ import dimensions
 import dblp
 
 
+def get_sparql_query_results(endpoint_url, query):
+    user_agent = "WDQS-example Python/%s.%s" % (sys.version_info[0], sys.version_info[1])
+    # TODO adjust user agent; see https://w.wiki/CX6
+    sparql = SPARQLWrapper(endpoint_url, agent=user_agent)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    return sparql.query().convert()
+
+
 def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496"):
     endpoint_url = "https://query.wikidata.org/sparql"
 
@@ -19,15 +28,7 @@ def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496")
     }
     LIMIT 100"""
 
-    def get_results(endpoint_url, query):
-        user_agent = "WDQS-example Python/%s.%s" % (sys.version_info[0], sys.version_info[1])
-        # TODO adjust user agent; see https://w.wiki/CX6
-        sparql = SPARQLWrapper(endpoint_url, agent=user_agent)
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        return sparql.query().convert()
-
-    results = get_results(endpoint_url, query)
+    results = get_sparql_query_results(endpoint_url, query)
 
     ids_set = set()
     for result in results["results"]["bindings"]:
@@ -37,6 +38,25 @@ def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496")
         # print(type(result))
 
     return ids_set
+
+
+def query_publications_from_wikidata(person_id="Q57231890"):
+    """ Get all entities the person is the author of.
+
+        Could additionally be filtered by entity type:
+            https://www.wikidata.org/wiki/Q23927052  conference paper
+            https://www.wikidata.org/wiki/Q13442814  scholarly article
+            https://www.wikidata.org/wiki/Q18918145  academic journal article
+            https://www.wikidata.org/wiki/Q591041    scientific publication
+            https://www.wikidata.org/wiki/Q55915575  scholarly work
+    """
+
+    endpoint_url = "https://query.wikidata.org/sparql"
+    query = ('SELECT ?pub ?title WHERE { ?pub wdt:P50 wd:' + person_id + ' .'
+                                        '?pub wdt:P1476 ?title . }')
+    results = get_sparql_query_results(endpoint_url, query)
+    return results
+
 
 def get_titles(persons_dict):
     fetching_functions = {
@@ -96,3 +116,7 @@ if __name__ == '__main__':
 
     # Now we've got our IDs - time to query the other endpoints
     print(get_titles(persons_dict=persons_dict))
+    # wd_pubs = query_publications_from_wikidata()
+    # print('found {} publications on wikidata'.format(
+    #     len(wd_pubs['results']['bindins'])
+    # ))

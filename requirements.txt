@@ -1,0 +1,4 @@
+requests
+SPARQLWrapper
+beautifulsoup4
+selenium
