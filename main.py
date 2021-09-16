@@ -36,7 +36,28 @@ def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496")
     return orcid_ids_set
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+import viaf
+import acm
+import dimensions
 
+fetching_functions = {
+    "VIAF": viaf.paper_titles_for_id,
+    "ACM Digital Library": acm.paper_titles_for_id,
+    "Dimensions": dimensions.paper_titles_for_id,
+}
+
+def get_titles(persons_dict):
+    titles = {}
+    for person in persons_dict.keys():
+        titles[person] = {}
+        for database in persons_dict[person].keys():
+            if database not in fetching_functions.keys():
+                continue
+            titles_for_database = []
+            for database_id in persons_dict[person][database]:
+                titles_for_database.append(fetching_functions[database](database_id))
+            titles[person][database] = titles_for_database
+    return titles
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -67,3 +88,4 @@ if __name__ == '__main__':
         # add values for the specific platform
         person_dict[platform] = platform_id
     print(persons_dict)
+    print(get_titles(persons_dict=persons_dict))
