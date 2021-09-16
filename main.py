@@ -34,10 +34,6 @@ def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496")
     ids_set = set()
     for result in results["results"]["bindings"]:
         ids_set.add(result['o']['value'])
-        # print(result['o']['value'])
-        # print(result.keys())
-        # print(type(result))
-
     return ids_set
 
 
@@ -54,7 +50,7 @@ def wikidata_paper_titles_for_id(person_id="Q57231890"):
 
     endpoint_url = "https://query.wikidata.org/sparql"
     query = ('SELECT ?pub ?title WHERE { ?pub wdt:P50 wd:' + person_id + ' .'
-                                        '?pub wdt:P1476 ?title . }')
+                                                                         '?pub wdt:P1476 ?title . }')
     results = get_sparql_query_results(endpoint_url, query)
     paper_titles = [r['title']['value'] for r in results['results']['bindings']]
     return paper_titles
@@ -118,4 +114,43 @@ if __name__ == '__main__':
     print(persons_dict)
 
     # Now we've got our IDs - time to query the other endpoints
-    print(get_titles(persons_dict=persons_dict))
+    grouped_titles_dict = get_titles(persons_dict=persons_dict)
+
+    ret_json = {}
+    for person in grouped_titles_dict:
+        # new person - add it to our data structure <3
+        papers_dict = ret_json.get(person, {})
+        # for default behaviour
+        ret_json[person] = papers_dict
+        # get a person along with its currently-associated titles
+        person_titles_dict = grouped_titles_dict[person]
+        for platform in person_titles_dict:
+            # print("Platform: ", platform)
+            for titles in person_titles_dict[platform]:
+                for title in titles:
+                    # print("Paper: ", title)
+                    paper_id = title
+                    # add info for the specific paper
+                    paper_dict = papers_dict.get(paper_id, {})
+                    papers_dict[paper_id] = paper_dict
+                    paper_dict["title"] = title
+                    paper_dict[platform] = 1
+
+    # add 0-count platforms to the returned JSON
+    for person in ret_json:
+        for paper in ret_json[person]:
+            for platform_not_found in set.difference(set(platform_properties_dict.keys()), set(ret_json[person][paper].keys())):
+                ret_json[person][paper][platform_not_found] = 0
+    print("Returned JSON: ", ret_json)
+
+    """
+    Currently: 'title': '<paper1>' may be removed due to title being used as paper key - may change in future ;)
+        return format: 
+        { '<wd_person_id>': { '<paper1>': {   'title': '<paper1>', 
+                                            '<platform1>': 0, 
+                                            '<platform2>': 1, ...,
+                             '<paper2>': {...} 
+                            }
+        }
+        ...
+    """
