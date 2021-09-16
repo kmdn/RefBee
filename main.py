@@ -117,7 +117,6 @@ if __name__ == '__main__':
         # add values for the specific platform
         person_dict[platform] = platform_id
     print(persons_dict)
-    print(get_titles(persons_dict=persons_dict))
 
     # Now we've got our IDs - time to query the other endpoints
-    query_orcid()
+    print(get_titles(persons_dict=persons_dict))

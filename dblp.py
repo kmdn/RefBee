@@ -8,13 +8,16 @@ import pprint
 def retrieve_titles(input_nt=""):
     g = Graph()
     g.parse(input_nt)
+    print("RDF File:", g)
+
 
     print(len(g))
     # prints: 2
     for stmt in g:
-        pprint.pprint(stmt)
-    for s, p, o, g in g.quads((None, RDF.type, None, None)):
-        print(s, g)
+        print(stmt)
+    #for s, p, o, g in g.quads((None, None, None, None)):
+    #    print(s, p, o, g)
+    return None
 
 
 def paper_titles_for_id(person_id):
