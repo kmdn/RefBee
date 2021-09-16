@@ -40,7 +40,7 @@ def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496")
     return ids_set
 
 
-def query_publications_from_wikidata(person_id="Q57231890"):
+def wikidata_paper_titles_for_id(person_id="Q57231890"):
     """ Get all entities the person is the author of.
 
         Could additionally be filtered by entity type:
@@ -55,7 +55,8 @@ def query_publications_from_wikidata(person_id="Q57231890"):
     query = ('SELECT ?pub ?title WHERE { ?pub wdt:P50 wd:' + person_id + ' .'
                                         '?pub wdt:P1476 ?title . }')
     results = get_sparql_query_results(endpoint_url, query)
-    return results
+    paper_titles = [r['title']['value'] for r in results['results']['bindings']]
+    return paper_titles
 
 
 def get_titles(persons_dict):
@@ -65,7 +66,7 @@ def get_titles(persons_dict):
         "Dimensions": dimensions.paper_titles_for_id,
         "DBLP": dblp.paper_titles_for_id,
         "ORCID": orcid_manual.paper_titles_for_id,
-
+        "Wikidata": wikidata_paper_titles_for_id,
     }
     titles = {}
     for person in persons_dict.keys():
@@ -116,7 +117,3 @@ if __name__ == '__main__':
 
     # Now we've got our IDs - time to query the other endpoints
     print(get_titles(persons_dict=persons_dict))
-    # wd_pubs = query_publications_from_wikidata()
-    # print('found {} publications on wikidata'.format(
-    #     len(wd_pubs['results']['bindins'])
-    # ))
