@@ -137,15 +137,14 @@ if __name__ == '__main__':
         person_titles_dict = grouped_titles_dict[person]
         for platform in person_titles_dict:
             # print("Platform: ", platform)
-            for titles in person_titles_dict[platform]:
-                for title in titles:
-                    # print("Paper: ", title)
-                    paper_id = title
-                    # add info for the specific paper
-                    paper_dict = papers_dict.get(paper_id, {})
-                    papers_dict[paper_id] = paper_dict
-                    paper_dict["title"] = title
-                    paper_dict[platform] = 1
+            for title in person_titles_dict[platform]:
+                print("Paper: ", title)
+                paper_id = title
+                # add info for the specific paper
+                paper_dict = papers_dict.get(paper_id, {})
+                papers_dict[paper_id] = paper_dict
+                paper_dict["title"] = title
+                paper_dict[platform] = 1
 
     # add 0-count platforms to the returned JSON
     for person in ret_json:
