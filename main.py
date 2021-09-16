@@ -8,6 +8,7 @@ import viaf
 import acm
 import dimensions
 import dblp
+import dnb
 import google_scholar
 import semantic_scholar
 import microsoft_academic
@@ -67,6 +68,7 @@ def get_titles(persons_dict):
         "ORCID": orcid_manual.paper_titles_for_id,
         "Google Scholar": google_scholar.paper_titles_for_id,
         "Semantic Scholar": semantic_scholar.paper_titles_for_id,
+        "DNB/GNB": dnb.paper_titles_for_id,
         "Microsoft Academic": microsoft_academic.paper_titles_for_id,
         "Wikidata": wikidata_paper_titles_for_id,
     }
