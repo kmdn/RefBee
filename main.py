@@ -84,7 +84,7 @@ def get_titles(persons_dict):
                 fetched_titles = fetching_functions[database](database_id)
                 if fetched_titles is None:
                     continue
-                titles_for_database.extend(fetching_functions[database](database_id))
+                titles_for_database.extend(fetched_titles)
             titles[person][database] = list(set(titles_for_database))
     return titles
 
