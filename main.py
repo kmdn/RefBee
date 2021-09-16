@@ -2,7 +2,7 @@
 # https://rdflib.github.io/sparqlwrapper/
 
 import sys
-import orcid
+import orcid_manual
 from SPARQLWrapper import SPARQLWrapper, JSON
 import viaf
 import acm
@@ -38,37 +38,13 @@ def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496")
 
     return ids_set
 
-
-def query_orcid(orcid_id="0000-0001-5458-8645", institution_key="APP-ZON9G76T8090XGSI",
-                institution_secret="fe8d3704-73ce-4b77-a4fa-c45df8ce454c", sandbox=False, authorization_code="PzS8tv",
-                redirect_uri="https://aifb.kit.edu&code=PzS8tv"):
-    # KN:
-    # 0000-0002-4916-9443
-    # code=PzS8tv
-    # curl -i -L -k -H 'Accept: application/json'
-    # --data 'client_id=APP-ZON9G76T8090XGSI
-    # client_secret=fe8d3704-73ce-4b77-a4fa-c45df8ce454c
-    # grant_type=authorization_code
-    # redirect_uri=https://aifb.kit.edu&code=PzS8tv' https://orcid.org/oauth/token
-    api = orcid.MemberAPI(institution_key, institution_secret, sandbox=False)
-    token = api.get_token(user_id=institution_key, password=institution_secret, redirect_uri=redirect_uri)
-    # get_token_from_authorization_code(authorization_code,
-    #                                           redirect_uri)
-    search_results = api.search_public('text:English')
-    # Get the summary
-    summary = api.read_record_public(orcid_id, 'activities',
-                                     token)
-    summary = api.read_record_public(orcid_id, 'record',
-                                     token)
-    print(summary)
-
-
 def get_titles(persons_dict):
     fetching_functions = {
         "VIAF": viaf.paper_titles_for_id,
         "ACM Digital Library": acm.paper_titles_for_id,
         "Dimensions": dimensions.paper_titles_for_id,
         "DBLP": dblp.paper_titles_for_id,
+        "ORCID": orcid_manual.paper_titles_for_id,
 
     }
     titles = {}
