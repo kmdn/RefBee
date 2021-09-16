@@ -1,4 +1,5 @@
 requests
+lxml
 SPARQLWrapper
 beautifulsoup4
 selenium

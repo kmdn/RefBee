@@ -9,6 +9,8 @@ import acm
 import dimensions
 import dblp
 import google_scholar
+import semantic_scholar
+import microsoft_academic
 
 
 def get_sparql_query_results(endpoint_url, query):
@@ -64,6 +66,8 @@ def get_titles(persons_dict):
         "DBLP": dblp.paper_titles_for_id,
         "ORCID": orcid_manual.paper_titles_for_id,
         "Google Scholar": google_scholar.paper_titles_for_id,
+        "Semantic Scholar": semantic_scholar.paper_titles_for_id,
+        "Microsoft Academic": microsoft_academic.paper_titles_for_id,
         "Wikidata": wikidata_paper_titles_for_id,
     }
     titles = {}
@@ -74,8 +78,11 @@ def get_titles(persons_dict):
                 continue
             titles_for_database = []
             for database_id in persons_dict[person][database]:
-                titles_for_database.append(fetching_functions[database](database_id))
-            titles[person][database] = titles_for_database
+                fetched_titles = fetching_functions[database](database_id)
+                if fetched_titles is None:
+                    continue
+                titles_for_database.extend(fetching_functions[database](database_id))
+            titles[person][database] = list(set(titles_for_database))
     return titles
 
 
@@ -92,14 +99,16 @@ if __name__ == '__main__':
         "DBLP": "wdt:P2456",
         "Dimensions": "wdt:P6178",
         "Github": "wdt:P2037",
-        "Microsoft Academic ": "wdt:P6366",
+        "Microsoft Academic": "wdt:P6366",
         "Semantic Scholar": "wdt:P4012",
         "DNB/GNB": "wdt:P227",
         "ACM Digital Library": "wdt:P864"
     }
 
     wd_person_id = "Q57231890"
-    persons_dict = {}
+    persons_dict = {
+        wd_person_id: {"Wikidata": wd_person_id}
+    }
     for platform in platform_properties_dict.keys():
         platform_property = platform_properties_dict[platform]
         platform_id = query_id_from_wikidata(person_id=wd_person_id, platform_predicate=platform_property)
