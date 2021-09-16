@@ -12,6 +12,8 @@ import dnb
 import google_scholar
 import semantic_scholar
 import microsoft_academic
+from flask import Flask
+from flask_cors import CORS
 
 
 def get_sparql_query_results(endpoint_url, query):
@@ -88,26 +90,25 @@ def get_titles(persons_dict):
     return titles
 
 
-if __name__ == '__main__':
-    """
-    Idea: Query Wikidata with a person's identifier (e.g. "Q57231890") and find their publications from other related 
-                                                                    platforms via getting their IDs for said platforms
-    """
 
-    platform_properties_dict = {
-        "ORCID": "wdt:P496",
-        "Google Scholar": "wdt:P1960",
-        "VIAF": "wdt:P214",
-        "DBLP": "wdt:P2456",
-        "Dimensions": "wdt:P6178",
-        "Github": "wdt:P2037",
-        "Microsoft Academic": "wdt:P6366",
-        "Semantic Scholar": "wdt:P4012",
-        "DNB/GNB": "wdt:P227",
-        "ACM Digital Library": "wdt:P864"
-    }
-
-    wd_person_id = "Q57231890"
+  
+platform_properties_dict = {
+    "ORCID": "wdt:P496",
+    "Google Scholar": "wdt:P1960",
+    "VIAF": "wdt:P214",
+    "DBLP": "wdt:P2456",
+    "Dimensions": "wdt:P6178",
+    "Github": "wdt:P2037",
+    "Microsoft Academic": "wdt:P6366",
+    "Semantic Scholar": "wdt:P4012",
+    "DNB/GNB": "wdt:P227",
+    "ACM Digital Library": "wdt:P864"
+}
+app = Flask(__name__)   
+CORS(app)
+@app.route("/<wd_person_id>")
+def query(wd_person_id):
+    # wd_person_id = "Q57231890"
     persons_dict = {
         wd_person_id: {"Wikidata": wd_person_id}
     }
@@ -123,10 +124,8 @@ if __name__ == '__main__':
         # add values for the specific platform
         person_dict[platform] = platform_id
     print(persons_dict)
-
     # Now we've got our IDs - time to query the other endpoints
     grouped_titles_dict = get_titles(persons_dict=persons_dict)
-
     ret_json = {}
     for person in grouped_titles_dict:
         # new person - add it to our data structure <3
@@ -145,22 +144,29 @@ if __name__ == '__main__':
                 papers_dict[paper_id] = paper_dict
                 paper_dict["title"] = title
                 paper_dict[platform] = 1
-
     # add 0-count platforms to the returned JSON
     for person in ret_json:
         for paper in ret_json[person]:
             for platform_not_found in set.difference(set(platform_properties_dict.keys()), set(ret_json[person][paper].keys())):
                 ret_json[person][paper][platform_not_found] = 0
     print("Returned JSON: ", ret_json)
-
+    return ret_json
     """
     Currently: 'title': '<paper1>' may be removed due to title being used as paper key - may change in future ;)
         return format: 
         { '<wd_person_id>': { '<paper1>': {   'title': '<paper1>', 
                                             '<platform1>': 0, 
                                             '<platform2>': 1, ...,
-                             '<paper2>': {...} 
+                            '<paper2>': {...} 
                             }
         }
         ...
+    """
+
+
+if __name__ == '__main__':
+    app.run()
+    """
+    Idea: Query Wikidata with a person's identifier (e.g. "Q57231890") and find their publications from other related 
+                                                                    platforms via getting their IDs for said platforms
     """

@@ -3,3 +3,6 @@ lxml
 SPARQLWrapper
 beautifulsoup4
 selenium
+feedparser
+flask
+flask-cors
