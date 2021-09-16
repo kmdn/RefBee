@@ -8,6 +8,7 @@ import viaf
 import acm
 import dimensions
 import dblp
+import google_scholar
 
 
 def get_sparql_query_results(endpoint_url, query):
@@ -66,6 +67,7 @@ def get_titles(persons_dict):
         "Dimensions": dimensions.paper_titles_for_id,
         "DBLP": dblp.paper_titles_for_id,
         "ORCID": orcid_manual.paper_titles_for_id,
+        "Google Scholar": google_scholar.paper_titles_for_id,
         "Wikidata": wikidata_paper_titles_for_id,
     }
     titles = {}

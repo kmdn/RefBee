@@ -1,5 +1,4 @@
 # https://scholar.google.de/citations?hl=de&user=Tzu2z8UAAAAJ&cstart=100&pagesize=200
-
 import requests
 from pprint import pprint
 from bs4 import BeautifulSoup
@@ -48,3 +47,11 @@ def get_google_scholar_publications(user):
             pub_infos = pub_infos[:-1]
             break
     return pub_infos
+
+def paper_titles_for_id(person_id):
+    function_out = get_google_scholar_publications(person_id)
+    output = [x[1][0] for x in function_out]
+    return output
+
+# paper_titles_for_id("Tzu2z8UAAAAJ")
+
