@@ -57,7 +57,13 @@ if __name__ == '__main__':
     persons_dict = {}
     for platform in platform_properties_dict.keys():
         platform_property = platform_properties_dict[platform]
-        print("ID (%s): %s" % (platform, platform_id))
         platform_id = query_id_from_wikidata(person_id=wd_person_id, platform_predicate=platform_property)
-
-
+        if len(platform_id) == 0:
+            continue
+        print("ID (%s): %s" % (platform, platform_id))
+        person_dict = persons_dict.get(wd_person_id, {})
+        # only relevant if it's defaulting to {}
+        persons_dict[wd_person_id] = person_dict
+        # add values for the specific platform
+        person_dict[platform] = platform_id
+    print(persons_dict)
