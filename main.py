@@ -42,7 +42,7 @@ def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496")
     return ids_set
 
 
-def wikidata_paper_titles_for_id(person_id="Q57231890"):
+def wikidata_paper_titles_for_id(person_id):
     """ Get all entities the person is the author of.
 
         Could additionally be filtered by entity type:
@@ -52,7 +52,6 @@ def wikidata_paper_titles_for_id(person_id="Q57231890"):
             https://www.wikidata.org/wiki/Q591041    scientific publication
             https://www.wikidata.org/wiki/Q55915575  scholarly work
     """
-
     endpoint_url = "https://query.wikidata.org/sparql"
     query = ('SELECT ?pub ?title WHERE { ?pub wdt:P50 wd:' + person_id + ' .'
                                                                          '?pub wdt:P1476 ?title . }')
@@ -110,7 +109,7 @@ CORS(app)
 def query(wd_person_id):
     # wd_person_id = "Q57231890"
     persons_dict = {
-        wd_person_id: {"Wikidata": wd_person_id}
+        wd_person_id: {"Wikidata": set([wd_person_id])}
     }
     for platform in platform_properties_dict.keys():
         platform_property = platform_properties_dict[platform]
