@@ -115,3 +115,4 @@ dmypy.json
 
 # Linux swap files
 *.swp
+.idea/misc.xml
