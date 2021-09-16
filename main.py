@@ -28,7 +28,7 @@ def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496")
     }
     LIMIT 100"""
 
-    results = get_results(endpoint_url, query)
+    results = get_sparql_query_results(endpoint_url, query)
 
     ids_set = set()
     for result in results["results"]["bindings"]:
