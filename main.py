@@ -103,7 +103,9 @@ if __name__ == '__main__':
     }
 
     wd_person_id = "Q57231890"
-    persons_dict = {}
+    persons_dict = {
+        wd_person_id: {"Wikidata": wd_person_id}
+    }
     for platform in platform_properties_dict.keys():
         platform_property = platform_properties_dict[platform]
         platform_id = query_id_from_wikidata(person_id=wd_person_id, platform_predicate=platform_property)
