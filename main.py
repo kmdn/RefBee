@@ -4,9 +4,10 @@
 import sys
 import orcid
 from SPARQLWrapper import SPARQLWrapper, JSON
+import viaf
+import acm
+import dimensions
 
-
-# This is a sample Python script.
 
 def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496"):
     endpoint_url = "https://query.wikidata.org/sparql"
@@ -37,11 +38,11 @@ def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496")
     return ids_set
 
 
-# KN:
-# 0000-0002-4916-9443
 def query_orcid(orcid_id="0000-0001-5458-8645", institution_key="APP-ZON9G76T8090XGSI",
                 institution_secret="fe8d3704-73ce-4b77-a4fa-c45df8ce454c", sandbox="", authorization_code="PzS8tv",
                 redirect_uri="https://aifb.kit.edu"):
+    # KN:
+    # 0000-0002-4916-9443
     # code=PzS8tv
     api = orcid.MemberAPI(institution_key, institution_secret, sandbox=True)
     token = api.get_token(user_id=institution_key, password=institution_secret, redirect_uri=redirect_uri)
@@ -54,6 +55,25 @@ def query_orcid(orcid_id="0000-0001-5458-8645", institution_key="APP-ZON9G76T809
     summary = api.read_record_public(orcid_id, 'record',
                                      token)
     print(summary)
+
+
+def get_titles(persons_dict):
+    fetching_functions = {
+        "VIAF": viaf.paper_titles_for_id,
+        "ACM Digital Library": acm.paper_titles_for_id,
+        "Dimensions": dimensions.paper_titles_for_id,
+    }
+    titles = {}
+    for person in persons_dict.keys():
+        titles[person] = {}
+        for database in persons_dict[person].keys():
+            if database not in fetching_functions.keys():
+                continue
+            titles_for_database = []
+            for database_id in persons_dict[person][database]:
+                titles_for_database.append(fetching_functions[database](database_id))
+            titles[person][database] = titles_for_database
+    return titles
 
 
 if __name__ == '__main__':
@@ -92,6 +112,7 @@ if __name__ == '__main__':
             # add values for the specific platform
             person_dict[platform] = platform_id
         print(persons_dict)
+    print(get_titles(persons_dict=persons_dict))
 
     # Now we've got our IDs - time to query the other endpoints
-    query_orcid()
+    #query_orcid()
