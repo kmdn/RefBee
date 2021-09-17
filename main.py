@@ -107,8 +107,8 @@ def disambiguate_titles(person_titles_dict):
             merged_dict[norm_key] = ppr_dict
         else:
             # merge w/ existing
-            if merged_dict[norm_key] == dict:
-                for source, val in merged_dict[norm_key]:
+            if type(merged_dict[norm_key]) == dict:
+                for source, val in merged_dict[norm_key].items():
                     if source != 'title':
                         merged_dict[norm_key][source] = (
                             merged_dict[norm_key][source] or ppr_dict[source]
