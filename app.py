@@ -14,7 +14,7 @@ import google_scholar
 import semantic_scholar
 import microsoft_academic
 from flask import Flask
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 
 def get_sparql_query_results(endpoint_url, query):
@@ -131,6 +131,7 @@ platform_properties_dict = {
 app = Flask(__name__)
 CORS(app)
 @app.route("/<wd_person_id>")
+@cross_origin()
 def query(wd_person_id):
     # wd_person_id = "Q57231890"
     persons_dict = {
