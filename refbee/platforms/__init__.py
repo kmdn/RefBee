@@ -8,4 +8,5 @@ platform_names = ["ORCID",
     "Microsoft Academic",
     "Semantic Scholar",
     "DNB/GNB",
-    "ACM Digital Library"]
+    #"ACM Digital Library"
+    ]

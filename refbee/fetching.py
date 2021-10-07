@@ -5,7 +5,7 @@ import time
 
 fetching_functions = {
     "VIAF": viaf.paper_titles_for_id,
-    "ACM Digital Library": acm.paper_titles_for_id,
+    #"ACM Digital Library": acm.paper_titles_for_id,
     "Dimensions": dimensions.paper_titles_for_id,
     "DBLP": dblp.paper_titles_for_id,
     "ORCID": orcid_manual.paper_titles_for_id,

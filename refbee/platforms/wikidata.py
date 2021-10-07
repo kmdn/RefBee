@@ -10,7 +10,7 @@ platform_properties_dict = {
     "Microsoft Academic": "wdt:P6366",
     "Semantic Scholar": "wdt:P4012",
     "DNB/GNB": "wdt:P227",
-    "ACM Digital Library": "wdt:P864"
+    #"ACM Digital Library": "wdt:P864"
 }
 
 def query_id_from_wikidata(person_id="Q57231890", platform_predicate="wdt:P496"):
