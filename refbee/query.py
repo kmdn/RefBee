@@ -1,7 +1,7 @@
 from refbee.platforms import platform_names
 from refbee.platforms.wikidata import platform_ids_for_person
 from refbee.disambiguation import disambiguate_titles
-from refbee.fetching import get_titles
+from refbee.fetching import get_titles_parallel as get_titles
 
 
 def query(wd_person_id):

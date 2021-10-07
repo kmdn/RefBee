@@ -1,4 +1,7 @@
 from refbee.platforms import orcid_manual, viaf, acm, dimensions, dblp, dnb, google_scholar, semantic_scholar, microsoft_academic, wikidata
+from multiprocessing import Process, Manager
+import time
+
 
 fetching_functions = {
     "VIAF": viaf.paper_titles_for_id,
@@ -15,6 +18,7 @@ fetching_functions = {
 
 
 def get_titles(persons_dict):
+    start = time.time()
 
     titles = {}
     for person in persons_dict.keys():
@@ -29,4 +33,34 @@ def get_titles(persons_dict):
                     continue
                 titles_for_database.extend(fetched_titles)
             titles[person][database] = list(set(titles_for_database))
+
+    end = time.time()
+    print(f"(Sequential) title fetching completed in: {end - start:.2f} seconds")
     return titles
+
+
+def get_titles_parallel(persons_dict):
+    start = time.time()
+
+    titles = {}
+    for person in persons_dict.keys():
+        manager = Manager()
+        titles[person] = manager.dict()
+
+        job = [Process(target=fetch_from_database, args=(titles[person], i, persons_dict[person])) for i in persons_dict[person].keys()]
+        _ = [p.start() for p in job]
+        _ = [p.join() for p in job]
+    end = time.time()
+    print(f"(Parallel) title fetching completed in: {end - start:.2f} seconds")
+    return titles
+
+def fetch_from_database(write_to, database, databases_for_person):
+    if database not in fetching_functions.keys():
+        return None
+    titles_for_database = []
+    for database_id in databases_for_person[database]:
+        fetched_titles = fetching_functions[database](database_id)
+        if fetched_titles is None:
+            continue
+        titles_for_database.extend(fetched_titles)
+    write_to[database] = list(set(titles_for_database))
