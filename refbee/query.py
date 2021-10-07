@@ -34,6 +34,8 @@ def query(wd_person_id):
         for paper in ret_json[person]:
             for platform_not_found in set.difference(set(platform_names), set(ret_json[person][paper].keys())):
                 ret_json[person][paper][platform_not_found] = 0
+            for platform_without_id in set.difference(set(platform_names), persons_dict[person].keys()):
+                ret_json[person][paper][platform_without_id] = -1
     
     # disambiguate titles
     for person in ret_json:
