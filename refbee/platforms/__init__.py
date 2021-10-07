@@ -1,5 +1,6 @@
 platform_names = ["ORCID",
     "Google Scholar",
+    "Wikidata",
     "VIAF",
     "DBLP",
     "Dimensions",
