@@ -8,7 +8,7 @@ import pprint
 def retrieve_titles(input_xml=""):
     root = etree.XML(input_xml.read())
     #print(dir(root))
-    print(root.getchildren())
+    # print(root.getchildren())
     titles = set()
     for element in root.iter():
         if element.tag == "title":
@@ -19,7 +19,7 @@ def retrieve_titles(input_xml=""):
 
 def paper_titles_for_id(person_id):
     url = f'https://dblp.org/pid/{person_id}.xml'
-    print("URL:", url)
+    # print("URL:", url)
     titles = retrieve_titles(input_xml=urllib.request.urlopen(url))
     return titles
 
