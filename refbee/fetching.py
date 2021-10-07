@@ -56,6 +56,7 @@ def get_titles_parallel(persons_dict):
 
 def fetch_from_database(write_to, database, databases_for_person):
     try:
+        start = time.time()
         if database not in fetching_functions.keys():
             return None
         titles_for_database = []
@@ -65,5 +66,7 @@ def fetch_from_database(write_to, database, databases_for_person):
                 continue
             titles_for_database.extend(fetched_titles)
         write_to[database] = list(set(titles_for_database))
+        end = time.time()
+        print(f"Fetch time {database}: {end - start:.2f} seconds")
     except:
         print(f"WARNING: Problems while fetching from {database}!")
