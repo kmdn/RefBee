@@ -22,7 +22,7 @@ def query(wd_person_id):
         for platform in person_titles_dict:
             # print("Platform: ", platform)
             for title in person_titles_dict[platform]:
-                print("Paper: ", title)
+                # print("Paper: ", title)
                 paper_id = title
                 # add info for the specific paper
                 paper_dict = papers_dict.get(paper_id, {})
@@ -38,6 +38,6 @@ def query(wd_person_id):
     # disambiguate titles
     for person in ret_json:
         ret_json[person] = disambiguate_titles(ret_json[person])
-    print("Returned JSON: ", ret_json)
+    #print("Returned JSON: ", ret_json)
     return ret_json
 
