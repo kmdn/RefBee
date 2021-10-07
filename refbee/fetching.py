@@ -55,12 +55,15 @@ def get_titles_parallel(persons_dict):
     return titles
 
 def fetch_from_database(write_to, database, databases_for_person):
-    if database not in fetching_functions.keys():
-        return None
-    titles_for_database = []
-    for database_id in databases_for_person[database]:
-        fetched_titles = fetching_functions[database](database_id)
-        if fetched_titles is None:
-            continue
-        titles_for_database.extend(fetched_titles)
-    write_to[database] = list(set(titles_for_database))
+    try:
+        if database not in fetching_functions.keys():
+            return None
+        titles_for_database = []
+        for database_id in databases_for_person[database]:
+            fetched_titles = fetching_functions[database](database_id)
+            if fetched_titles is None:
+                continue
+            titles_for_database.extend(fetched_titles)
+        write_to[database] = list(set(titles_for_database))
+    except:
+        print(f"WARNING: Problems while fetching from {database}!")
