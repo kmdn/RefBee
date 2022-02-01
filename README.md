@@ -1,5 +1,7 @@
 # ResearcherPublicationMapping
 
+![Logo](refbee-logo.png?raw=true "Logo")
+
 Crawl the web for publications.
 
 ## Build and run using Docker
